@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 import styles from './map.styles';
 import Loading from '../loading/Loading';
-import { ERROR_MSG, SUCCESSFUL_PERMISSION_STATUS } from '@/constants';
+import { ERROR_MSG, SUCCESSFUL_PERMISSION_STATUS, API_KEYS } from '@/constants';
 import catchError from '@/utilities/catchError.utility';
+import MapViewDirections from 'react-native-maps-directions';
 
 const INITIAL_REGION = {
   latitude: -26.789837,
@@ -71,9 +72,11 @@ export default function Map() {
               setDestinationCoordinates(nativeEvent?.coordinate)
             }
           />
-          <Polyline
-            coordinates={[startCoordinates, destinationCoordinates]}
-            strokeColor="blue"
+          <MapViewDirections
+            origin={startCoordinates}
+            destination={destinationCoordinates}
+            apikey={API_KEYS.GOOGLE_MAPS}
+            strokeColor="black"
             strokeWidth={5}
           />
         </MapView>
