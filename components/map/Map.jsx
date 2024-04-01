@@ -1,12 +1,13 @@
+import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
+import MapViewDirections from 'react-native-maps-directions';
 
 import styles from './map.styles';
+import carIcon from '@/assets/car.png';
 import Loading from '../loading/Loading';
 import { ERROR_MSG, SUCCESSFUL_PERMISSION_STATUS, API_KEYS } from '@/constants';
 import catchError from '@/utilities/catchError.utility';
-import MapViewDirections from 'react-native-maps-directions';
 
 const INITIAL_REGION = {
   latitude: -26.789837,
@@ -15,17 +16,17 @@ const INITIAL_REGION = {
   longitudeDelta: 0.9,
 };
 
-const DESTINATION = {
+const DEFAULT_DESTINATION = {
   ...INITIAL_REGION,
   latitude: 33.753746,
   longitude: -84.38633,
 };
 
 export default function Map() {
+  const [isLoading, setIsLoading] = useState(true);
   const [startCoordinates, setStartCoordinates] = useState(INITIAL_REGION);
   const [destinationCoordinates, setDestinationCoordinates] =
-    useState(DESTINATION);
-  const [isLoading, setIsLoading] = useState(true);
+    useState(DEFAULT_DESTINATION);
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -59,6 +60,7 @@ export default function Map() {
       ) : (
         <MapView style={styles.container} initialRegion={startCoordinates}>
           <Marker
+            image={carIcon}
             coordinate={startCoordinates}
             draggable
             onDragEnd={({ nativeEvent }) =>
