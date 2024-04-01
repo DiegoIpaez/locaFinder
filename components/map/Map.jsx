@@ -1,13 +1,18 @@
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
 import styles from './map.styles';
 import carIcon from '@/assets/car.png';
 import Loading from '../loading/Loading';
-import { ERROR_MSG, SUCCESSFUL_PERMISSION_STATUS, API_KEYS } from '@/constants';
 import catchError from '@/utilities/catchError.utility';
+import {
+  ERROR_MSG,
+  SUCCESSFUL_PERMISSION_STATUS,
+  API_KEYS,
+  COLORS,
+} from '@/constants';
 
 const INITIAL_REGION = {
   latitude: -26.789837,
@@ -51,8 +56,6 @@ export default function Map() {
     getLocationPermission();
   }, []);
 
-  if (isLoading) return <Loading />;
-
   return (
     <>
       {isLoading ? (
@@ -74,13 +77,21 @@ export default function Map() {
               setDestinationCoordinates(nativeEvent?.coordinate)
             }
           />
-          <MapViewDirections
-            origin={startCoordinates}
-            destination={destinationCoordinates}
-            apikey={API_KEYS.GOOGLE_MAPS}
-            strokeColor="black"
-            strokeWidth={5}
-          />
+          {API_KEYS.GOOGLE_MAPS ? (
+            <MapViewDirections
+              origin={startCoordinates}
+              destination={destinationCoordinates}
+              apikey={API_KEYS.GOOGLE_MAPS}
+              strokeColor={COLORS.dark}
+              strokeWidth={5}
+            />
+          ) : (
+            <Polyline
+              coordinates={[startCoordinates, destinationCoordinates]}
+              strokeColor={COLORS.primary}
+              strokeWidth={5}
+            />
+          )}
         </MapView>
       )}
     </>

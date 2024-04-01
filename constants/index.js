@@ -1,3 +1,4 @@
+export * from './colors.constant';
 export * from './messages.constant';
 
 const SUCCESSFUL_PERMISSION_STATUS = 'granted';
