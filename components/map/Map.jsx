@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 import styles from './map.styles';
@@ -14,8 +14,16 @@ const INITIAL_REGION = {
   longitudeDelta: 0.9,
 };
 
+const DESTINATION = {
+  ...INITIAL_REGION,
+  latitude: 33.753746,
+  longitude: -84.38633,
+};
+
 export default function Map() {
-  const [startCoords, setStartCoords] = useState(INITIAL_REGION);
+  const [startCoordinates, setStartCoordinates] = useState(INITIAL_REGION);
+  const [destinationCoordinates, setDestinationCoordinates] =
+    useState(DESTINATION);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +34,7 @@ export default function Map() {
           throw new Error(ERROR_MSG.PERMISSIONS.LOCATION.DENIED);
         }
         const { coords } = await Location.getCurrentPositionAsync();
-        setStartCoords((prev) => ({
+        setStartCoordinates((prev) => ({
           ...prev,
           latitude: coords?.latitude,
           longitude: coords.longitude,
@@ -48,8 +56,26 @@ export default function Map() {
       {isLoading ? (
         <Loading />
       ) : (
-        <MapView style={styles.container} initialRegion={startCoords}>
-          <Marker coordinate={startCoords} />
+        <MapView style={styles.container} initialRegion={startCoordinates}>
+          <Marker
+            coordinate={startCoordinates}
+            draggable
+            onDragEnd={({ nativeEvent }) =>
+              setStartCoordinates(nativeEvent?.coordinate)
+            }
+          />
+          <Marker
+            coordinate={destinationCoordinates}
+            draggable
+            onDragEnd={({ nativeEvent }) =>
+              setDestinationCoordinates(nativeEvent?.coordinate)
+            }
+          />
+          <Polyline
+            coordinates={[startCoordinates, destinationCoordinates]}
+            strokeColor="blue"
+            strokeWidth={5}
+          />
         </MapView>
       )}
     </>
